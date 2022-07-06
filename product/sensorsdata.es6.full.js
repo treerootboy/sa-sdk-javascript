@@ -7252,6 +7252,8 @@ DeprecatedJSBridge.prototype = {
   }
 };
 
+
+// 可视化埋点 begin
 var vtrackBase = {};
 vtrackBase.initUrl = function() {
   var url_info = {
@@ -8393,7 +8395,10 @@ function checkState() {
     };
   });
 }
+// 可视化埋点 end
 
+
+// 业务流程埋点 begin
 var saEmpty = {
   track: function(e, p, c) {},
   quick: function(name, p, t, c) {},
@@ -8736,6 +8741,8 @@ var dataStageImpl$1 = {
 function DataFormatFeature() {
   this.dataStage = dataStageImpl$1;
 }
+
+// 业务流程埋点 end
 
 var preCfg = window['sensors_data_pre_config'];
 var is_compliance_enabled = isObject(preCfg) ? preCfg.is_compliance_enabled : false;
