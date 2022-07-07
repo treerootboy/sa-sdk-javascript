@@ -5223,6 +5223,13 @@ var commonWays = {
       not_set_profile: true
     }), callback);
   },
+
+  /*自动跟踪
+  1. 发送 UTM 统计
+  2. 监听 hash 变动
+  3. 发送 PV 统计
+  4. 记录首次访问属性
+  */
   autoTrack: function(para, callback) {
     para = isObject(para) ? para : {};
 
@@ -5426,6 +5433,7 @@ function addPropsHook(data) {
   }
 }
 
+/*获取通用属性 */
 function initPara(para) {
   extend(sdPara, para || sd.para || {});
 
@@ -7637,6 +7645,7 @@ var customProp = {
   filterConfig: vtrackBase.filterConfig
 };
 
+// 可视化埋点入口
 var vtrackcollect = {
   unlimitedDiv: unlimitedDiv,
   config: {},
@@ -7680,6 +7689,12 @@ var vtrackcollect = {
       return false;
     }
 
+    /* 埋点配置请求逻辑
+    1. 设置session过期时间，同一session内不作埋点配置更新
+    2. 先取 localstorage，没有再取服务器
+    3. 从服务器拉取配置后，存储到 localstorage
+    4. 页面被前置/获得焦点时，检查是否到更新点
+    */
     if (!this.storageEnable) {
       this.getConfigFromServer();
     } else {
@@ -8322,6 +8337,17 @@ function enterFullTrack() {
   }
 }
 
+/* 开始跟踪事件
+   1. sd.bridge.app_js_bridge_v1 初始化 js bridge
+   2. pageInfo.initPage 初始化页面信息
+   3. listenSinglePage 跟踪页面
+   4. sd.batchSend.batchInterval 设定定时批量发送事件
+   5. sd.store.init 跟踪标识存储初始化
+   6. sd.vtrackBase.init 可视化埋点配置初始化
+   7. enterFullTrack 开始监听事件，进入全埋点
+     - heatmap.initHeatmap 点击埋点
+     - heatmap.initScrollmap 滚动埋点
+ */
 function trackMode() {
   sd.readyState.setState(3);
 
@@ -8781,6 +8807,14 @@ function implementCore(isRealImp) {
   sd.use = use;
 }
 
+/* 神策 SDK 初始化入口
+ 1. implementCore 初始化 SDK 方法
+ 2. ee.initSystemEvent 初始化默认事件，监听页面路径变动及触发 SDK hook
+ 3. sd.setInitVar 初始化变量，库版本、是否首次访问用户等
+ 4. sd.initPara 初始化配置参数
+ 5. sd.detectMode 检查是否在设定模式还是在监听模式
+    - 
+ */
 sd.init = function(para) {
   ee.sdk.emit('beforeInit');
   if (sd.readyState && sd.readyState.state && sd.readyState.state >= 2) {
